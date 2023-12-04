@@ -1,6 +1,7 @@
 @page "/registration"
+@using System.Collections
 @using Newtonsoft.Json
-@using System.Text
+@inject IJSRuntime JSRuntime
 
 <div class="row">
     <div class="col-md-4">
@@ -19,7 +20,6 @@
             <div class="card-footer">
                 <input type="button" class="btn btn-success" value="Sign Up" @onclick="HandleSubmitClick"/>
             </div>
-            <h5>@_jsonResponse</h5>
         </div>
     </div>
     <div class="col-md-4"></div>
@@ -31,7 +31,6 @@
     private string _password;
     private string _confirmPassword;
     private string _showErrorClass = "d-none";
-    private string _jsonResponse;
     
     private HttpClient _httpClient = new HttpClient();
 
@@ -55,22 +54,26 @@
             _showErrorClass = "d-none";
         }
 
-        var json = JsonConvert.SerializeObject(new
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/SignUp", new
         {
             Username = _username,
-            Password = _password
+            Password = _password,
+            Comments = new ArrayList(),
+            Blogs = new ArrayList(),
+            Posts = new ArrayList(),
+            Tags = new ArrayList()
         });
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        content.Headers.Add("host","https://localhost:7115");
-        content.Headers.Add("accept","*/*");
-        var response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/SignUp", new
-        {
-            Username = _username,
-            Password = _password
-        });
-        if (response.IsSuccessStatusCode)
-        {
-            _jsonResponse = await response.Content.ReadAsStringAsync();
-        }
+        
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+        ApiResponse apiResponse = JsonConvert.DeserializeObject<ApiResponse>(jsonResponse);
+        JSRuntime.InvokeVoidAsync("localStorage.setItem", "token", apiResponse.Token);
+        string token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "token");
+
     }
+
+    private class ApiResponse
+    {
+        public string Token { get; set; }
+    }
+    
 }

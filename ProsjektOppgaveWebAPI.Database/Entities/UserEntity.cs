@@ -12,7 +12,7 @@ public class UserEntity
     
     public long Id { get; set; }
     public string Username { get; set; }
-    public string Password { get; set; }
+    public string HashedPassword { get; set; }
 
     public ICollection<CommentEntity> Comments { get; set; }
     public ICollection<BlogEntity> Blogs { get; set; }

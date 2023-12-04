@@ -1,29 +1,25 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.EntityFramework;
+using ProsjektOppgaveWebAPI.EntityFramework.Repository;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
+using ProsjektOppgaveWebAPI.Services.UserServices;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-
-services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllRequests", builder =>
-    {
-        builder.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
-});
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration["ConnectionStrings:SqliteConnection"]));
+
+services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 services.AddAuthentication(options =>
     {
@@ -49,10 +45,11 @@ services.AddAuthentication(options =>
 services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 services.AddTransient<IJwtService, JwtService>();
+services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
+services.AddTransient<IUserService, UserService>();
 
 var app = builder.Build();
 
-app.UseCors("AllowAllRequests");
 
 if (app.Environment.IsDevelopment())
 {

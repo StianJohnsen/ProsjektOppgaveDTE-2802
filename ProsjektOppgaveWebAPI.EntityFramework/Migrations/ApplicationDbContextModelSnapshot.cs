@@ -158,12 +158,9 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Property<long>("UserFk")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserFk");
 
                     b.ToTable("Tags", (string)null);
                 });
@@ -174,7 +171,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("HashedPassword")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -190,7 +187,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                         new
                         {
                             Id = 1L,
-                            Password = "admin",
+                            HashedPassword = "admin",
                             Username = "admin"
                         });
                 });
@@ -277,8 +274,8 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
             modelBuilder.Entity("ProsjektOppgaveWebAPI.Database.Entities.TagEntity", b =>
                 {
                     b.HasOne("ProsjektOppgaveWebAPI.Database.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithMany("Tags")
+                        .HasForeignKey("UserFk")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -311,6 +308,8 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Posts");
+
+                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

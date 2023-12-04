@@ -11,12 +11,12 @@ public class UserConfiguration: IEntityTypeConfiguration<UserEntity>
         builder.ToTable("Users");
         builder.HasKey(user => user.Id);
         builder.Property(user => user.Username).IsRequired();
-        builder.Property(user => user.Password).IsRequired();
+        builder.Property(user => user.HashedPassword).IsRequired();
         builder.HasData(new UserEntity()
         {
             Id = 1,
             Username = "admin",
-            Password = "admin"
+            HashedPassword = "admin"
 
         });
     }

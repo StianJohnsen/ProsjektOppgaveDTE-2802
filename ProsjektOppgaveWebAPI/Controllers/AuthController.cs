@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProsjektOppgaveWebAPI.Database.Entities;
-using ProsjektOppgaveWebAPI.Services.JwtServices;
+using ProsjektOppgaveWebAPI.Services.UserServices;
+using ProsjektOppgaveWebAPI.Services.UserServices.Models;
 
 namespace ProsjektOppgaveWebAPI.Controllers;
 
@@ -9,31 +9,30 @@ namespace ProsjektOppgaveWebAPI.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IJwtService _jwtService;
+    private readonly IUserService _userService;
 
-    public AuthController(IJwtService jwtService)
+    public AuthController(IUserService  userService)
     {
-        _jwtService = jwtService;
+        _userService = userService;
     }
     
     [HttpPost]
     [Route("SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] UserEntity vm)
+    public async Task<IActionResult> SignUp([FromBody] CreateUserHttpPostModel vm)
     {
-        var response = await _jwtService.GenerateToken(vm);
-        if (response.IsError)
-        {
-            return BadRequest(new
-            {
-                responseMessage = response.ErrorMessage
-            });
-            
-        }
-        return Ok(new
-        {
-            success = true,
-            token = response.Value
-        });
+       var response = await _userService.Create(vm);
+
+       if (response.IsError)
+       {
+           return BadRequest(new
+           {
+               responseMessage = response.ErrorMessage
+           });
+       }
+       return Ok(new
+       {
+           token = response.Value
+       });
     }
     
     [HttpGet]
@@ -46,4 +45,24 @@ public class AuthController : ControllerBase
             success = true
         });
     }
+    
+    [HttpPost]
+    [Route("/SignIn")]
+    public async Task<IActionResult> SignIn([FromBody] SignInHttpPostModel vm)
+    {
+        var response = await _userService.SignIn(vm);
+
+        if (response.IsError)
+        {
+            return BadRequest(new
+            {
+                responseMessage = response.ErrorMessage
+            });
+        }
+        return Ok(new
+        {
+            token = response.Value
+        });
+    }
+
 }

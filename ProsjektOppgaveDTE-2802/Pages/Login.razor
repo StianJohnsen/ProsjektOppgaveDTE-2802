@@ -1,6 +1,50 @@
 @page "/Login"
-<h3>Login</h3>
+@using Newtonsoft.Json
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Authorisation</h4>
+            </div>
+            <div class="card-body">
+                <input type="text" class="form-control" placeholder="username" @bind="_username"/><br/>
+                <input type="password" class="form-control" placeholder="password" @bind="_password"/><br/>
+            </div>
+            <div class="card-footer">
+                <input type="button" class="btn btn-success" value="Sign In" @onclick="HandleSubmitClick"/>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
 
 @code {
+    private string _username;
+    private string _password;
+    private HttpClient _httpClient = new HttpClient();
+
+    private async void HandleSubmitClick()
+    {
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync("https://localhost:7022/api/Auth/SignIn", new
+        {
+            Username = _username,
+            Password = _password
+        });
+
+        if (response.IsSuccessStatusCode)
+        {
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            SignInResponse signInResponse = JsonConvert.DeserializeObject<SignInResponse>(jsonResponse);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "token", signInResponse.Token);
+        }
+    }
     
+    private class SignInResponse
+    {
+        public string Token { get; set; }
+    }
 }

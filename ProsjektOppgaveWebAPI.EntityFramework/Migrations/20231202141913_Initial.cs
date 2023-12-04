@@ -10,27 +10,13 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Tags",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    ColorRgb = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Username = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false)
+                    HashedPassword = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,6 +39,27 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                     table.PrimaryKey("PK_Blogs", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Blogs_Users_UserFk",
+                        column: x => x.UserFk,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    ColorRgb = table.Column<string>(type: "TEXT", nullable: false),
+                    UserFk = table.Column<long>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tags_Users_UserFk",
                         column: x => x.UserFk,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -163,7 +170,7 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Password", "Username" },
+                columns: new[] { "Id", "HashedPassword", "Username" },
                 values: new object[] { 1L, "admin", "admin" });
 
             migrationBuilder.CreateIndex(
@@ -195,6 +202,11 @@ namespace ProsjektOppgaveWebAPI.EntityFramework.Migrations
                 name: "IX_Posts_BlogFk",
                 table: "Posts",
                 column: "BlogFk");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_UserFk",
+                table: "Tags",
+                column: "UserFk");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -1,0 +1,25 @@
+@page "/TestAuth"
+@inject IJSRuntime JSRuntime
+<h3>TestAuth</h3>
+
+@code {
+    private readonly HttpClient _httpClient = new HttpClient();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "token");
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _httpClient.GetAsync("https://localhost:7022/CheckToken");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+            }
+        }
+    }
+
+}
