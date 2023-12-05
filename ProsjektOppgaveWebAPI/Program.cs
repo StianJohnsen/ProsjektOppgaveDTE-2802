@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProsjektOppgaveWebAPI.Database.Entities;
 using ProsjektOppgaveWebAPI.EntityFramework;
 using ProsjektOppgaveWebAPI.EntityFramework.Repository;
+using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
 using ProsjektOppgaveWebAPI.Services.UserServices;
@@ -47,6 +48,8 @@ services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 services.AddTransient<IJwtService, JwtService>();
 services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
 services.AddTransient<IUserService, UserService>();
+
+services.AddTransient<IBlogService, BlogService>();
 
 var app = builder.Build();
 

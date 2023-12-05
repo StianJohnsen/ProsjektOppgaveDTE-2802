@@ -32,7 +32,7 @@ public class UserService: IUserService
             .FirstOrDefaultAsync(x => x.Username == vm.Username);
         if (user != null)
         {
-            return ResponseService<string>.Error(Errors.USER_ALREADY_EXISTS);
+            return ResponseService<string>.Error(Errors.USER_ALREADY_EXISTS_ERROR);
         }
         
         user = new UserEntity()
@@ -59,12 +59,12 @@ public class UserService: IUserService
             .FirstOrDefaultAsync(user => user.Username == vm.Username);
         if (userEntity == null)
         {
-            return ResponseService<string>.Error(Errors.USER_NOT_FOUND);
+            return ResponseService<string>.Error(Errors.USER_NOT_FOUND_ERROR);
         }
         var verifiedResult = _passwordHasher.VerifyHashedPassword(null, userEntity.HashedPassword, vm.Password);
         if (verifiedResult == PasswordVerificationResult.Failed)
         {
-            return ResponseService<string>.Error(Errors.USER_NOT_FOUND);
+            return ResponseService<string>.Error(Errors.USER_NOT_FOUND_ERROR);
         }
         return await _jwtService.GenerateToken(userEntity);
     }

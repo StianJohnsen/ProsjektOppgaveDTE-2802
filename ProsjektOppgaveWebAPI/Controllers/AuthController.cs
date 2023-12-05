@@ -17,7 +17,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost]
-    [Route("SignUp")]
+    [Route("[action]")]
     public async Task<IActionResult> SignUp([FromBody] CreateUserHttpPostModel vm)
     {
        var response = await _userService.Create(vm);
