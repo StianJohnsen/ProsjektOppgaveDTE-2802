@@ -65,16 +65,16 @@ public class BlogService: IBlogService
 
     public async Task<ResponseService> Update(UpdateBlogHttpPostModel vm)
     {
-        BlogEntity comment = await _blogRepository.GetById(vm.Id);
-        if (comment == null)
+        BlogEntity blog = await _blogRepository.GetById(vm.Id);
+        if (blog == null)
         {
             return ResponseService.Error(Errors.BLOG_NOT_FOUND_ERROR);
         }
-        comment.Title = vm.Title;
+        blog.Title = vm.Title;
         
         try
         {
-            await _blogRepository.Update(comment);
+            await _blogRepository.Update(blog);
         }
         catch (Exception e)
         {

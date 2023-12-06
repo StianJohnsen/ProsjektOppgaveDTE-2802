@@ -9,6 +9,7 @@ using ProsjektOppgaveWebAPI.EntityFramework.Repository;
 using ProsjektOppgaveWebAPI.Services.BlogServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices;
 using ProsjektOppgaveWebAPI.Services.JwtServices.Models;
+using ProsjektOppgaveWebAPI.Services.PostServices;
 using ProsjektOppgaveWebAPI.Services.UserServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,8 +49,8 @@ services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 services.AddTransient<IJwtService, JwtService>();
 services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
 services.AddTransient<IUserService, UserService>();
-
 services.AddTransient<IBlogService, BlogService>();
+services.AddTransient<IPostService, PostService>();
 
 var app = builder.Build();
 
